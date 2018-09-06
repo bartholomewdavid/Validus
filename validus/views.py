@@ -6,6 +6,12 @@ import validus.mathutils as mathutils
 
 from datetime import datetime
 
+# This slice is a wild guess at how to determine how many records are in a "1 year" rolling average
+# I counted 260 rows for the year of 1990 and just assumed that would work for demo purposes
+ROLLING_1_YEAR_SLICE = 260
+ROLLING_2_YEAR_SLICE = ROLLING_1_YEAR_SLICE * 2
+ROLLING_3_YEAR_SLICE = ROLLING_1_YEAR_SLICE * 3
+
 def date_to_milliseconds(date):
     return datetime(date.year, date.month, date.day, 0, 0, 0, 0).timestamp() * 1000
 
@@ -60,8 +66,6 @@ def question_2(request):
 
     USD = Currency.objects.filter(underlying='GBPUSD')
 
-    # This slice is a wild guess at how to determine how many records are in a "1 year" rolling average
-    # I counted 260 rows for the year of 1990 and just assumed that would work for demo purposes
     USD_Rolling_1 = []
     USD_Rolling_2 = []
     USD_Rolling_3 = []
@@ -69,15 +73,15 @@ def question_2(request):
     for i in range(len(USD)):
         USD_Rolling_1.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.average([val.mid for val in USD[i-260:i]]) if i > 260 else ''
+            'y': mathutils.average([val.mid for val in USD[i-ROLLING_1_YEAR_SLICE:i]]) if i > ROLLING_1_YEAR_SLICE else ''
         })
         USD_Rolling_2.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.average([val.mid for val in USD[i-520:i]]) if i > 520 else ''
+            'y': mathutils.average([val.mid for val in USD[i-ROLLING_2_YEAR_SLICE:i]]) if i > ROLLING_2_YEAR_SLICE else ''
         })
         USD_Rolling_3.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.average([val.mid for val in USD[i-780:i]]) if i > 780 else ''
+            'y': mathutils.average([val.mid for val in USD[i-ROLLING_3_YEAR_SLICE:i]]) if i > ROLLING_3_YEAR_SLICE else ''
         })
 
     context = {
@@ -94,8 +98,6 @@ def question_3(request):
 
     USD = Currency.objects.filter(underlying='GBPUSD')
 
-    # This slice is a wild guess at how to determine how many records are in a "1 year" rolling average
-    # I counted 260 rows for the year of 1990 and just assumed that would work for demo purposes
     USD_Rolling_1 = []
     USD_Rolling_2 = []
     USD_Rolling_3 = []
@@ -103,15 +105,15 @@ def question_3(request):
     for i in range(len(USD)):
         USD_Rolling_1.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.std_deviation([val.mid for val in USD[i-260:i]]) if i > 260 else ''
+            'y': mathutils.std_deviation([val.mid for val in USD[i-ROLLING_1_YEAR_SLICE:i]]) if i > ROLLING_1_YEAR_SLICE else ''
         })
         USD_Rolling_2.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.std_deviation([val.mid for val in USD[i-520:i]]) if i > 520 else ''
+            'y': mathutils.std_deviation([val.mid for val in USD[i-ROLLING_2_YEAR_SLICE:i]]) if i > ROLLING_2_YEAR_SLICE else ''
         })
         USD_Rolling_3.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
-            'y': mathutils.std_deviation([val.mid for val in USD[i-780:i]]) if i > 780 else ''
+            'y': mathutils.std_deviation([val.mid for val in USD[i-ROLLING_3_YEAR_SLICE:i]]) if i > ROLLING_3_YEAR_SLICE else ''
         })
 
     context = {
@@ -123,29 +125,25 @@ def question_3(request):
 
     return HttpResponse(template.render(context, request))
 
-    return HttpResponse(template.render(context, request))
-
 def question_4(request):
     template = loader.get_template('question_4.html')
 
     EUR = Currency.objects.filter(underlying='GBPEUR')
     USD = Currency.objects.filter(underlying='GBPUSD')
 
-    # This slice is a wild guess at how to determine how many records are in a "1 year" rolling average
-    # I counted 260 rows for the year of 1990 and just assumed that would work for demo purposes
     Cov_Rolling_1 = []
     Cov_Rolling_2 = []
     Cov_Rolling_3 = []
 
     for i in range(len(USD)):
-        x_inputs_1_year = [val.mid for val in USD[i-260:i]] if i > 260 else None
-        y_inputs_1_year = [val.mid for val in EUR[i-260:i]] if i > 260 else None
+        x_inputs_1_year = [val.mid for val in USD[i-ROLLING_1_YEAR_SLICE:i]] if i > ROLLING_1_YEAR_SLICE else None
+        y_inputs_1_year = [val.mid for val in EUR[i-ROLLING_1_YEAR_SLICE:i]] if i > ROLLING_1_YEAR_SLICE else None
 
-        x_inputs_2_year = [val.mid for val in USD[i-520:i]] if i > 520 else None
-        y_inputs_2_year = [val.mid for val in EUR[i-520:i]] if i > 520 else None
+        x_inputs_2_year = [val.mid for val in USD[i-ROLLING_2_YEAR_SLICE:i]] if i > ROLLING_2_YEAR_SLICE else None
+        y_inputs_2_year = [val.mid for val in EUR[i-ROLLING_2_YEAR_SLICE:i]] if i > ROLLING_2_YEAR_SLICE else None
 
-        x_inputs_3_year = [val.mid for val in USD[i-780:i]] if i > 780 else None
-        y_inputs_3_year = [val.mid for val in EUR[i-780:i]] if i > 780 else None
+        x_inputs_3_year = [val.mid for val in USD[i-ROLLING_3_YEAR_SLICE:i]] if i > ROLLING_3_YEAR_SLICE else None
+        y_inputs_3_year = [val.mid for val in EUR[i-ROLLING_3_YEAR_SLICE:i]] if i > ROLLING_3_YEAR_SLICE else None
 
         Cov_Rolling_1.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
@@ -176,21 +174,19 @@ def question_5(request):
     EUR = Currency.objects.filter(underlying='GBPEUR')
     USD = Currency.objects.filter(underlying='GBPUSD')
 
-    # This slice is a wild guess at how to determine how many records are in a "1 year" rolling average
-    # I counted 260 rows for the year of 1990 and just assumed that would work for demo purposes
     Cor_Rolling_1 = []
     Cor_Rolling_2 = []
     Cor_Rolling_3 = []
 
     for i in range(len(USD)):
-        x_inputs_1_year = [val.mid for val in USD[i-260:i]] if i > 260 else None
-        y_inputs_1_year = [val.mid for val in EUR[i-260:i]] if i > 260 else None
+        x_inputs_1_year = [val.mid for val in USD[i-ROLLING_1_YEAR_SLICE:i]] if i > ROLLING_1_YEAR_SLICE else None
+        y_inputs_1_year = [val.mid for val in EUR[i-ROLLING_1_YEAR_SLICE:i]] if i > ROLLING_1_YEAR_SLICE else None
 
-        x_inputs_2_year = [val.mid for val in USD[i-520:i]] if i > 520 else None
-        y_inputs_2_year = [val.mid for val in EUR[i-520:i]] if i > 520 else None
+        x_inputs_2_year = [val.mid for val in USD[i-ROLLING_2_YEAR_SLICE:i]] if i > ROLLING_2_YEAR_SLICE else None
+        y_inputs_2_year = [val.mid for val in EUR[i-ROLLING_2_YEAR_SLICE:i]] if i > ROLLING_2_YEAR_SLICE else None
 
-        x_inputs_3_year = [val.mid for val in USD[i-780:i]] if i > 780 else None
-        y_inputs_3_year = [val.mid for val in EUR[i-780:i]] if i > 780 else None
+        x_inputs_3_year = [val.mid for val in USD[i-ROLLING_3_YEAR_SLICE:i]] if i > ROLLING_3_YEAR_SLICE else None
+        y_inputs_3_year = [val.mid for val in EUR[i-ROLLING_3_YEAR_SLICE:i]] if i > ROLLING_3_YEAR_SLICE else None
 
         Cor_Rolling_1.append({
             'x': date_to_milliseconds(USD[i].valuation_date),
