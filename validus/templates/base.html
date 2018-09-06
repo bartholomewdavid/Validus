@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>David Bartholomew Sample</title>
+
+        {% load staticfiles %}
+
+        <script src="{% static "d3/d3.js" %}"></script>
+
+        <link rel="stylesheet" href="{% static "nvd3/nv.d3.css" %}"></link>
+        <script src="{% static "nvd3/nv.d3.js" %}"></script>
+
+        <link rel="stylesheet" href="{% static "styles.css" %}"></link>
+    </head>
+    <body>
+
+        <a href="/">Raw Data</a>
+        <a href="/1">Question 1</a>
+        <a href="/2">Question 2</a>
+        <a href="/3">Question 3</a>
+        <a href="/4">Question 4</a>
+        <a href="/5">Question 5</a>
+
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

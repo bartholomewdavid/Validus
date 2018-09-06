@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Question 5</h2>
+<h3>Rolling Correlation</h3>
+
+<div id="rolling-cov" class="chart long"><svg></svg></div>
+
+<script>
+    var data = [
+        // {
+        //     values: {{ GBPUSD|safe }},
+        //     key: 'GBPUSD'
+        // },
+        // {
+        //     values: {{ GBPEUR|safe }},
+        //     key: 'GBPEUR'
+        // },
+        {
+            values: {{ Cor_Rolling_1|safe }},
+            key: 'Cor_Rolling_1'
+        },
+        {
+            values: {{ Cor_Rolling_2|safe }},
+            key: 'Cor_Rolling_2'
+        },
+        {
+            values: {{ Cor_Rolling_3|safe }},
+            key: 'Cor_Rolling_3'
+        },
+    ];
+
+    /*These lines are all chart setup.  Pick and choose which chart features you want to utilize. */
+    nv.addGraph(function () {
+        var chart = nv.models.lineChart()
+            .margin({ left: 100 })  //Adjust chart margins to give the x-axis some breathing room.
+            .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+            .transitionDuration(350)  //how fast do you want the lines to transition?
+            .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
+            .showYAxis(true)        //Show the y-axis
+            .showXAxis(true)        //Show the x-axis
+            ;
+
+        chart.xAxis     //Chart x-axis settings
+            .axisLabel('Date')
+            .tickFormat(function(d) { return d3.time.format('%B %d, %Y')(new Date(d))});
+
+        chart.yAxis     //Chart y-axis settings
+            .axisLabel('Mid')
+            .tickFormat(d3.format('.05f'));
+
+        /* Done setting the chart up? Time to render it!*/
+        var myData = null;   //You need data...
+
+        d3.select('#rolling-cov svg')    //Select the <svg> element you want to render the chart in.
+            .datum(data)         //Populate the <svg> element with chart data...
+            .call(chart);          //Finally, render the chart!
+
+        //Update the chart when window resizes.
+        nv.utils.windowResize(function () { chart.update() });
+        return chart;
+    });
+</script>
+
+{% endblock %}

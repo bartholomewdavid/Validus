@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Question 1 - Daily Returns</h2>
+
+<h3>EUR</h3>
+<div id="eur-returns" class="chart long"><svg></svg></div>
+
+<h3>USD</h3>
+<div id="usd-returns" class="chart long"><svg></svg></div>
+
+
+<script>
+    var eur_data = [
+        {
+            values: {{ GBPEUR_Returns|safe }},
+            key: 'GBPEUR_Returns'
+        }
+    ];
+    var usd_data = [
+        {
+            values: {{ GBPUSD_Returns|safe }},
+            key: 'GBPUSD_Returns'
+        }
+    ];
+
+    /*These lines are all chart setup.  Pick and choose which chart features you want to utilize. */
+    nv.addGraph(function () {
+        var chart = nv.models.lineChart()
+            .margin({ left: 100 })  //Adjust chart margins to give the x-axis some breathing room.
+            .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+            .transitionDuration(350)  //how fast do you want the lines to transition?
+            .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
+            .showYAxis(true)        //Show the y-axis
+            .showXAxis(true)        //Show the x-axis
+            ;
+
+        chart.xAxis     //Chart x-axis settings
+            .axisLabel('Date')
+            .tickFormat(function(d) { return d3.time.format('%B %d, %Y')(new Date(d))});
+
+        chart.yAxis     //Chart y-axis settings
+            .axisLabel('Mid')
+            .tickFormat(d3.format('.05f'));
+
+        /* Done setting the chart up? Time to render it!*/
+        var myData = null;   //You need data...
+
+        d3.select('#eur-returns svg')    //Select the <svg> element you want to render the chart in.
+            .datum(eur_data)         //Populate the <svg> element with chart data...
+            .call(chart);          //Finally, render the chart!
+
+        //Update the chart when window resizes.
+        nv.utils.windowResize(function () { chart.update() });
+        return chart;
+    });
+
+    /*These lines are all chart setup.  Pick and choose which chart features you want to utilize. */
+    nv.addGraph(function () {
+        var chart = nv.models.lineChart()
+            .margin({ left: 100 })  //Adjust chart margins to give the x-axis some breathing room.
+            .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+            .transitionDuration(350)  //how fast do you want the lines to transition?
+            .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
+            .showYAxis(true)        //Show the y-axis
+            .showXAxis(true)        //Show the x-axis
+            ;
+
+        chart.xAxis     //Chart x-axis settings
+            .axisLabel('Date')
+            .tickFormat(function(d) { return d3.time.format('%d/%m/%y')(new Date(d))});
+
+        chart.yAxis     //Chart y-axis settings
+            .axisLabel('Mid')
+            .tickFormat(d3.format('.02f'));
+
+        /* Done setting the chart up? Time to render it!*/
+        var myData = null;   //You need data...
+
+        d3.select('#usd-returns svg')    //Select the <svg> element you want to render the chart in.
+            .datum(usd_data)         //Populate the <svg> element with chart data...
+            .call(chart);          //Finally, render the chart!
+
+        //Update the chart when window resizes.
+        nv.utils.windowResize(function () { chart.update() });
+        return chart;
+    });
+</script>
+
+{% endblock %}
